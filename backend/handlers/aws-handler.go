@@ -46,6 +46,7 @@ func GetPresignedURL(c *gin.Context) {
 		Credentials:      credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
 		Region:           region,
 		EndpointResolver: s3.EndpointResolverFromURL(endpoint),
+		UsePathStyle:     true,
 	})
 
 	presignClient := s3.NewPresignClient(s3Client)

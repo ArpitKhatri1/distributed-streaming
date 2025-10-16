@@ -24,7 +24,7 @@ export default function Home() {
     })
     const awsUrl = urlResponse.data.url
     console.log(awsUrl)
-    const response = await axios.post("https://"+awsUrl.slice(1), file, {
+    const response = await axios.put(awsUrl, file, {
       headers: {
         "Content-Type": file.type,
       }
@@ -32,7 +32,6 @@ export default function Home() {
 
     console.log(response.data)
     setIsUploading(false);
-
 
   }
 
