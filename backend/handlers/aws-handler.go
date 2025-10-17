@@ -3,12 +3,13 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
 
+	awsfunctions "github.com/ArpitKhatri1/distributed-streaming/aws-functions"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 )
@@ -42,18 +43,13 @@ func GetPresignedURL(c *gin.Context) {
 		return
 	}
 
-	s3Client := s3.New(s3.Options{
-		Credentials:      credentials.NewStaticCredentialsProvider(accessKey, secretKey, ""),
-		Region:           region,
-		EndpointResolver: s3.EndpointResolverFromURL(endpoint),
-		UsePathStyle:     true,
-	})
-
-	presignClient := s3.NewPresignClient(s3Client)
+	presignClient := s3.NewPresignClient(awsfunctions.S3Client)
+	safeFileName := url.PathEscape(req.FileName)
+	key := strconv.FormatInt(time.Now().UnixNano(), 10) + "_" + safeFileName
 
 	presignedURL, err := presignClient.PresignPutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket:      aws.String(bucketName),
-		Key:         aws.String(strconv.FormatInt(time.Now().UnixNano(), 10) + req.FileName), //avoid same file name overwriting
+		Key:         aws.String(key),
 		ContentType: aws.String(req.FileType),
 	}, s3.WithPresignExpires(1*time.Minute))
 
@@ -64,4 +60,5 @@ func GetPresignedURL(c *gin.Context) {
 	fmt.Println(presignedURL.URL)
 
 	c.JSON(200, PreSignedReponseType{URL: presignedURL.URL})
+
 }
