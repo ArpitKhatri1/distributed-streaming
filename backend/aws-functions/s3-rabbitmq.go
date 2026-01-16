@@ -25,7 +25,7 @@ func ConnectS3ToRabbitMQ() {
 						types.EventS3ObjectCreatedPut,
 						types.EventS3ObjectCreatedPost,
 					},
-					QueueArn: aws.String("arn:minio:sqs::1:amqp"), // MinIO accepts AMQP targets like SQS ARN format
+					QueueArn: aws.String("arn:minio:sqs::_:amqp"), // MinIO accepts AMQP targets like SQS ARN format
 				},
 			},
 		},

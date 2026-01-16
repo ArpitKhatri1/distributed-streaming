@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   minio:
     image: minio/minio:latest
@@ -9,7 +7,14 @@ services:
       - "9001:9001"
     environment:
       MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: password
+      MINIO_ROOT_PASSWORD: password      
+      MINIO_NOTIFY_AMQP_ENABLE: "on"
+      MINIO_NOTIFY_AMQP_URL: "amqp://guest:guest@rabbitmq:5672"
+      MINIO_NOTIFY_AMQP_EXCHANGE: "minio-events"
+      MINIO_NOTIFY_AMQP_EXCHANGE_TYPE: "topic"
+      MINIO_NOTIFY_AMQP_ROUTING_KEY: "s3"
+      MINIO_NOTIFY_AMQP_DURABLE: "on"
+      
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
